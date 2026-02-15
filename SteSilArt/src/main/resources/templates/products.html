@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-links}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3">
+            <div>
+                <h1 class="display-5 fw-bold">Catalogo Articoli</h1>
+                <p class="text-muted">Manufatti unici creati dai nostri utenti.</p>
+            </div>
+            <a th:if="${#authorization.expression('isAuthenticated()')}" 
+               href="/admin/productForm" class="btn btn-primary btn-lg shadow">
+               Vendi articolo
+            </a>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col" th:each="product : ${products}">
+                <div class="card h-100 shadow-sm border-0">
+                    
+					<div class="ratio ratio-4x3 overflow-hidden rounded-top bg-light">
+					    <img th:if="${product.images != null and !product.images.isEmpty()}" 
+					         th:src="'data:image/jpeg;base64,' + ${product.images[0].base64Data}" 
+					         class="card-img-top object-fit-cover" alt="Prodotto">
+					    
+					    <img th:unless="${product.images != null and !product.images.isEmpty()}" 
+					         src="https://via.placeholder.com/400x300?text=Senza+Foto" 
+					         class="card-img-top object-fit-cover" alt="Default">
+					</div>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}">Nome</h5>
+                        <p class="card-text text-muted small text-truncate" th:text="${product.description}">Descrizione</p>
+                        <p class="h5 text-success fw-bold" th:text="'€ ' + ${product.price}">0.00</p>
+                    </div>
+                    
+					<div class="card-footer bg-white border-top-0 pb-3">
+					    <a th:href="@{'/products/' + ${product.id}}" class="btn btn-outline-dark w-100 mb-2">Vedi Dettagli</a>
+					    
+					    <div th:if="${#authorization.expression('isAuthenticated()') and product.author != null}" class="btn-group w-100">
+					        
+					        <div th:if="${#authentication.name == product.author.firstName}" class="w-100 btn-group">
+					            <a th:href="@{'/admin/products/edit/' + ${product.id}}" class="btn btn-sm btn-outline-secondary">Modifica</a>
+					            <form th:action="@{'/admin/products/delete/' + ${product.id}}" method="POST" class="d-inline w-50">
+					                <button type="submit" class="btn btn-sm btn-outline-danger w-100" 
+					                        onclick="return confirm('Eliminare?')">Elimina</button>
+					            </form>		
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

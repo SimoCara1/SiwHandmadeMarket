@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-links}"></head>
+<body class="bg-light">
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="row g-0">
+                        <div class="col-md-4 bg-dark text-white p-4 d-flex flex-column justify-content-center align-items-center">
+                            <img th:if="${!product.images.isEmpty()}" 
+                                 th:src="'data:image/jpeg;base64,' + ${product.images[0].base64Data}" 
+                                 class="img-fluid rounded-3 mb-3 shadow" style="max-height: 200px;">
+                            <h4 class="fw-bold text-center" th:text="${product.name}">Prodotto</h4>
+                            <p class="badge bg-primary px-3 py-2" th:text="'€ ' + ${product.price}">Prezzo</p>
+                        </div>
+
+                        <div class="col-md-8 p-5 bg-white">
+                            <div class="mb-4">
+                                <h3 class="fw-bold mb-1">Invia un messaggio</h3>
+                                <p class="text-muted">Stai scrivendo a: 
+                                    <span class="fw-bold text-dark" th:text="${recipient.firstName + ' ' + recipient.lastName}">Destinatario</span>
+                                </p>
+                            </div>
+
+                            <form th:action="@{/messages/send}" method="POST">
+                                <input type="hidden" name="productId" th:value="${product.id}">
+                                <input type="hidden" name="recipientId" th:value="${recipient.id}">
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Il tuo messaggio</label>
+                                    <textarea th:field="${message.content}" class="form-control rounded-3 p-3 shadow-sm" 
+                                              rows="6" placeholder="Ciao! Ho una domanda su questo articolo..." required></textarea>
+                                </div>
+
+                                <div class="d-flex gap-3">
+                                    <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                                        <i class="bi bi-send me-2"></i>Invia ora
+                                    </button>
+                                    <a th:href="@{'/products/' + ${product.id}}" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
+                                        Annulla
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="~{fragments/header :: scripts}"></div>
+</body>
+</html>

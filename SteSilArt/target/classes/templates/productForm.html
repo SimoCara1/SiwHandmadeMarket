@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-links}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h2 class="mb-4">Metti in vendita un nuovo manufatto</h2>
+                <form th:action="@{/admin/products}" th:object="${product}" method="POST" enctype="multipart/form-data">
+                    
+					<div class="mb-3">
+					        <label class="form-label">Immagini del manufatto (seleziona una o più)</label>
+					        <input type="file" name="file" class="form-control" multiple accept="image/*">
+					        <div class="form-text">Puoi caricare più foto del tuo lavoro.</div>
+					</div>
+					
+                    <div class="mb-3">
+                        <label class="form-label">Nome del Manufatto</label>
+                        <input type="text" th:field="*{name}" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Categoria</label>
+                        <select th:field="*{category}" class="form-select" required>
+                            <option value="Gioiello">Gioiello</option>
+                            <option value="Borsa">Borsa</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Prezzo (€)</label>
+                        <input type="number" step="0.01" th:field="*{price}" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descrizione</label>
+                        <textarea th:field="*{description}" class="form-control" rows="4" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg">Pubblica Annuncio</button>
+                    <a href="/products" class="btn btn-link">Annulla</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

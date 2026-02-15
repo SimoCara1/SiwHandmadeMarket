@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-links}"></head>
+<body class="bg-light">
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold"><i class="bi bi-box-seam me-2"></i>I miei Manufatti</h2>
+            <a th:href="@{/admin/productForm}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Vendi Nuovo
+            </a>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-4">Prodotto</th>
+                        <th>Categoria</th>
+                        <th>Prezzo</th>
+                        <th class="text-center">Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${products}">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <img th:if="${!p.images.isEmpty()}" 
+                                     th:src="'data:image/jpeg;base64,' + ${p.images[0].base64Data}" 
+                                     class="rounded me-3" style="width: 45px; height: 45px; object-fit: cover;">
+                                <span class="fw-bold" th:text="${p.name}">Nome</span>
+                            </div>
+                        </td>
+                        <td th:text="${p.category}">Categoria</td>
+                        <td th:text="'€ ' + ${p.price}">€ 0.00</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a th:href="@{'/products/' + ${p.id}}" class="btn btn-outline-secondary" title="Vedi">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a th:href="@{'/admin/products/edit/' + ${p.id}}" class="btn btn-outline-primary" title="Modifica">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{'/admin/products/delete/' + ${p.id}}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-outline-danger" 
+                                            onclick="return confirm('Eliminare definitivamente?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${products.isEmpty()}">
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            Non hai ancora messo in vendita nessun articolo.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/header :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-links}"></head>
+<body class="bg-light">
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-4">
+        <div class="col-md-8 mx-auto shadow rounded-4 bg-white overflow-hidden d-flex flex-column" style="height: 80vh;">
+            
+            <div class="p-3 bg-dark text-white d-flex align-items-center border-bottom">
+                <img th:if="${!product.images.isEmpty()}" 
+                     th:src="'data:image/jpeg;base64,' + ${product.images[0].base64Data}" 
+                     class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                <div>
+                    <h6 class="mb-0" th:text="${product.name}">Prodotto</h6>
+                    <small class="text-muted">Chat con <span th:text="${otherUser.firstName}">Nome</span></small>
+                </div>
+                <a th:href="@{'/products/' + ${product.id}}" class="btn btn-sm btn-outline-light ms-auto">Vedi Articolo</a>
+            </div>
+
+            <div class="flex-grow-1 p-4 overflow-y-auto bg-light d-flex flex-column" id="chatWindow">
+                <div th:each="m : ${conversation}" 
+                     th:class="${m.sender.id == loggedInUser.id} ? 'd-flex justify-content-end mb-3' : 'd-flex justify-content-start mb-3'">
+                    <div th:class="${m.sender.id == loggedInUser.id} ? 'bg-primary text-white p-3 rounded-4 shadow-sm' : 'bg-white text-dark p-3 rounded-4 shadow-sm'" 
+                         style="max-width: 75%;">
+                        <p class="mb-1" th:text="${m.content}">Messaggio...</p>
+                        <small class="opacity-75" style="font-size: 0.7rem;" th:text="${#temporals.format(m.sentAt, 'HH:mm')}">12:00</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 border-top bg-white">
+                <form th:action="@{/messages/send}" method="POST" class="d-flex gap-2">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <input type="hidden" name="recipientId" th:value="${otherUser.id}">
+                    <input type="text" th:field="${message.content}" class="form-control rounded-pill px-4" placeholder="Scrivi un messaggio..." required>
+                    <button type="submit" class="btn btn-primary rounded-circle p-2">
+                        <i class="bi bi-send-fill px-1"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/header :: scripts}"></div>
+    <script>
+        // Scroll automatico in fondo alla chat all'apertura
+        var chatWindow = document.getElementById("chatWindow");
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    </script>
+</body>
+</html>

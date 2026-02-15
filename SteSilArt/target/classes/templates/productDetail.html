@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-links}"></head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-md-6">
+                <div id="productCarousel" class="carousel slide shadow rounded overflow-hidden" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div th:each="img, iterStat : ${product.images}" 
+                             th:class="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">
+                            <img th:src="'data:image/jpeg;base64,' + ${img.base64Data}" 
+                                 class="d-block w-100 object-fit-cover" style="height: 500px;" alt="Foto prodotto">
+                        </div>
+                        
+                        <div th:if="${#lists.isEmpty(product.images)}" class="carousel-item active">
+                            <img src="https://via.placeholder.com/600x500?text=Nessuna+Immagine" class="d-block w-100" alt="Default">
+                        </div>
+                    </div>
+                    
+                    <button th:if="${#lists.size(product.images) > 1}" class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button th:if="${#lists.size(product.images) > 1}" class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/products}">Catalogo</a></li>
+                        <li class="breadcrumb-item active" th:text="${product.category}">Categoria</li>
+                    </ol>
+                </nav>
+
+                <h1 class="display-4 fw-bold" th:text="${product.name}">Nome Articolo</h1>
+                <p class="h2 text-success mb-4" th:text="'€ ' + ${product.price}">€ 0.00</p>
+                
+                <div class="mb-4">
+                    <h5>Descrizione dell'artigiano</h5>
+                    <p class="text-muted" th:text="${product.description}">Descrizione...</p>
+                </div>
+
+                <div class="card bg-light border-0 mb-4 rounded-3">
+                    <div class="card-body">
+                        <p class="mb-0"><strong>Creato da:</strong> <span th:text="${product.author.firstName + ' ' + product.author.lastName}">Nome Artigiano</span></p>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-grid gap-2 mt-4">
+
+                    <div th:if="${loggedInUser != null and product.author != null and loggedInUser.id == product.author.id}">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a th:href="@{'/admin/products/edit/' + ${product.id}}" class="btn btn-secondary btn-lg w-100 rounded-3">
+                                    <i class="bi bi-pencil-square me-2"></i>Modifica
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <form th:action="@{'/admin/products/delete/' + ${product.id}}" method="POST">
+                                    <button type="submit" class="btn btn-danger btn-lg w-100 rounded-3" 
+                                            onclick="return confirm('Sei sicuro di voler eliminare definitivamente questo articolo?')">
+                                        <i class="bi bi-trash"></i> Elimina
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:unless="${loggedInUser != null and product.author != null and loggedInUser.id == product.author.id}">
+                        <div class="d-grid gap-3">
+                            
+                            <a th:if="${loggedInUser != null}" th:href="@{'/messages/new/' + ${product.id}}" class="btn btn-outline-primary w-100 py-2 rounded-3">
+                                <i class="bi bi-envelope-at me-2"></i> Chiedi info all'autore
+                            </a>
+
+                            <div th:if="${loggedInUser != null}">
+                                <div th:if="${alreadyInCart}" class="d-grid gap-2">
+                                    <button class="btn btn-secondary btn-lg w-100 rounded-3 disabled">
+                                        <i class="bi bi-cart-check-fill me-2"></i> Già nel tuo carrello
+                                    </button>
+                                    <small class="text-center text-muted">Controlla il carrello per completare l'acquisto.</small>
+                                </div>
+
+                                <form th:unless="${alreadyInCart}" th:action="@{/cart/add}" method="POST">
+                                    <input type="hidden" name="productId" th:value="${product.id}">
+                                    <button type="submit" class="btn btn-success btn-lg w-100 rounded-3 shadow-sm">
+                                        <i class="bi bi-cart-plus me-2"></i> Aggiungi al carrello
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div th:if="${loggedInUser == null}" class="d-grid gap-2">
+                                <a th:href="@{/login}" class="btn btn-dark btn-lg w-100 rounded-3">
+                                    Accedi per acquistare
+                                </a>
+                                <small class="text-center text-muted">
+                                    È necessario un account per contattare l'artigiano o aggiungere prodotti al carrello.
+                                </small>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="~{fragments/header :: scripts}"></div>
+</body>
+</html>
